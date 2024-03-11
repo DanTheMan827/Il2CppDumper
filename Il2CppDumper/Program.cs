@@ -2,93 +2,33 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 
 namespace Il2CppDumper
 {
-    class Program
+    public class Program
     {
-        private static Config config;
+        private static Config config = new Config();
+        private static bool skipConfigLoad = false;
+
+        public static void SetConfig(Config config)
+        {
+            Program.config = config;
+            skipConfigLoad = true;
+        }
 
         [STAThread]
-        static void Main(string[] args)
+        public static void Main(string il2cppPath, string metadataPath, string outputDir)
         {
-            config = JsonSerializer.Deserialize<Config>(File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + @"config.json"));
-            string il2cppPath = null;
-            string metadataPath = null;
-            string outputDir = null;
+            outputDir = outputDir ?? AppDomain.CurrentDomain.BaseDirectory;
 
-            if (args.Length == 1)
-            {
-                if (args[0] == "-h" || args[0] == "--help" || args[0] == "/?" || args[0] == "/h")
-                {
-                    ShowHelp();
-                    return;
-                }
-            }
-            if (args.Length > 3)
-            {
-                ShowHelp();
-                return;
-            }
-            if (args.Length > 1)
-            {
-                foreach (var arg in args)
-                {
-                    if (File.Exists(arg))
-                    {
-                        var file = File.ReadAllBytes(arg);
-                        if (BitConverter.ToUInt32(file, 0) == 0xFAB11BAF)
-                        {
-                            metadataPath = arg;
-                        }
-                        else
-                        {
-                            il2cppPath = arg;
-                        }
-                    }
-                    else if (Directory.Exists(arg))
-                    {
-                        outputDir = Path.GetFullPath(arg) + Path.DirectorySeparatorChar;
-                    }
-                }
-            }
-            outputDir ??= AppDomain.CurrentDomain.BaseDirectory;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                if (il2cppPath == null)
-                {
-                    var ofd = new OpenFileDialog
-                    {
-                        Filter = "Il2Cpp binary file|*.*"
-                    };
-                    if (ofd.ShowDialog())
-                    {
-                        il2cppPath = ofd.FileName;
-                        ofd.Filter = "global-metadata|global-metadata.dat";
-                        if (ofd.ShowDialog())
-                        {
-                            metadataPath = ofd.FileName;
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-            }
             if (il2cppPath == null)
             {
-                ShowHelp();
-                return;
+                throw new ArgumentNullException(nameof(Il2Cpp));
             }
+
             if (metadataPath == null)
             {
-                Console.WriteLine($"ERROR: Metadata file not found or encrypted.");
+                throw new ArgumentNullException($"ERROR: Metadata file not found or encrypted.");
             }
             else
             {
@@ -104,16 +44,6 @@ namespace Il2CppDumper
                     Console.WriteLine(e);
                 }
             }
-            if (config.RequireAnyKey)
-            {
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadKey(true);
-            }
-        }
-
-        static void ShowHelp()
-        {
-            Console.WriteLine($"usage: {AppDomain.CurrentDomain.FriendlyName} <executable-file> <global-metadata> <output-directory>");
         }
 
         private static bool Init(string il2cppPath, string metadataPath, out Metadata metadata, out Il2Cpp il2Cpp)

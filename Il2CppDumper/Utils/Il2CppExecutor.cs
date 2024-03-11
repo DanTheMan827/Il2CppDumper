@@ -10,7 +10,7 @@ namespace Il2CppDumper
     {
         public Metadata metadata;
         public Il2Cpp il2Cpp;
-        private static readonly Dictionary<int, string> TypeString = new()
+        private static readonly Dictionary<int, string> TypeString = new Dictionary<int, string>()
         {
             {1,"void"},
             {2,"bool"},
@@ -118,7 +118,7 @@ namespace Il2CppDumper
                         var index = typeName.IndexOf("`");
                         if (index != -1)
                         {
-                            str += typeName[..index];
+                            str += typeName.Substring(0, index);
                         }
                         else
                         {
@@ -167,7 +167,7 @@ namespace Il2CppDumper
                 var index = typeName.IndexOf("`");
                 if (index != -1)
                 {
-                    typeName = typeName[..index];
+                    typeName = typeName.Substring(0, index);
                 }
                 if (genericParameter)
                 {

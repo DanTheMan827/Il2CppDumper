@@ -19,7 +19,7 @@ namespace Il2CppDumper
             executor = il2CppExecutor;
             metadata = il2CppExecutor.metadata;
             il2Cpp = il2CppExecutor.il2Cpp;
-            methodModifiers = new();
+            methodModifiers = new Dictionary<Il2CppMethodDefinition, string>();
         }
 
         public void Decompile(Config config, string outputDir)

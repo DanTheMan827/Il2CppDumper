@@ -192,16 +192,34 @@ namespace Il2CppDumper
                 {
                     var type = rela.r_info & 0xffffffff;
                     var sym = rela.r_info >> 32;
-                    (ulong value, bool recognized) result = (type, elfHeader.e_machine) switch
+
+                    ulong value = 0;
+                    bool recognized = false;
+
+                    if (type == R_AARCH64_ABS64 && elfHeader.e_machine == EM_AARCH64)
                     {
-                        (R_AARCH64_ABS64, EM_AARCH64) => (symbolTable[sym].st_value + rela.r_addend, true),
-                        (R_AARCH64_RELATIVE, EM_AARCH64) => (rela.r_addend, true),
+                        value = symbolTable[sym].st_value + rela.r_addend;
+                        recognized = true;
+                    }
+                    else if (type == R_AARCH64_RELATIVE && elfHeader.e_machine == EM_AARCH64)
+                    {
+                        value = rela.r_addend;
+                        recognized = true;
+                    }
+                    else if (type == R_X86_64_64 && elfHeader.e_machine == EM_X86_64)
+                    {
+                        value = symbolTable[sym].st_value + rela.r_addend;
+                        recognized = true;
+                    }
+                    else if (type == R_X86_64_RELATIVE && elfHeader.e_machine == EM_X86_64)
+                    {
+                        value = rela.r_addend;
+                        recognized = true;
+                    }
 
-                        (R_X86_64_64, EM_X86_64) => (symbolTable[sym].st_value + rela.r_addend, true),
-                        (R_X86_64_RELATIVE, EM_X86_64) => (rela.r_addend, true),
+                    (ulong value, bool recognized) result = (value, recognized);
 
-                        _ => (0, false)
-                    };
+
                     if (result.recognized)
                     {
                         Position = MapVATR(rela.r_offset);

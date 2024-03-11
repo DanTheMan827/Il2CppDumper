@@ -12,9 +12,9 @@ namespace Il2CppDumper
         private readonly bool isTextCompressed;
         private readonly bool isRoDataCompressed;
         private readonly bool isDataCompressed;
-        private readonly List<NSOSegmentHeader> segments = new();
+        private readonly List<NSOSegmentHeader> segments = new List<NSOSegmentHeader>();
         private Elf64_Sym[] symbolTable;
-        private readonly List<Elf64_Dyn> dynamicSection = new();
+        private readonly List<Elf64_Dyn> dynamicSection = new List<Elf64_Dyn>();
         private bool IsCompressed => isTextCompressed || isRoDataCompressed || isDataCompressed;
 
 

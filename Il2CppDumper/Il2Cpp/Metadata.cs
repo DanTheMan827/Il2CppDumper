@@ -38,7 +38,7 @@ namespace Il2CppDumper
         public uint[] vtableMethods;
         public Il2CppRGCTXDefinition[] rgctxEntries;
 
-        private readonly Dictionary<uint, string> stringCache = new();
+        private readonly Dictionary<uint, string> stringCache = new Dictionary<uint, string>();
 
         public Metadata(Stream stream) : base(stream)
         {
@@ -253,6 +253,21 @@ namespace Il2CppDumper
             return index & 0x1FFFFFFFU;
         }
 
+        private static int GetPrimitiveTypeSize(string name)
+        {
+            switch (name)
+            {
+                case "Int32":
+                case "UInt32":
+                    return 4;
+                case "Int16":
+                case "UInt16":
+                    return 2;
+                default:
+                    return 0;
+            }
+        }
+
         public int SizeOf(Type type)
         {
             var size = 0;
@@ -286,15 +301,7 @@ namespace Il2CppDumper
             }
             return size;
 
-            static int GetPrimitiveTypeSize(string name)
-            {
-                return name switch
-                {
-                    "Int32" or "UInt32" => 4,
-                    "Int16" or "UInt16" => 2,
-                    _ => 0,
-                };
-            }
+
         }
     }
 }

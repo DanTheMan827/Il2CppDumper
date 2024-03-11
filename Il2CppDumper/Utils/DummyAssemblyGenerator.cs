@@ -10,19 +10,19 @@ namespace Il2CppDumper
 {
     public class DummyAssemblyGenerator
     {
-        public List<AssemblyDefinition> Assemblies = new();
+        public List<AssemblyDefinition> Assemblies = new List<AssemblyDefinition>();
 
         private readonly Il2CppExecutor executor;
         private readonly Metadata metadata;
         private readonly Il2Cpp il2Cpp;
-        private readonly Dictionary<Il2CppTypeDefinition, TypeDefinition> typeDefinitionDic = new();
-        private readonly Dictionary<Il2CppGenericParameter, GenericParameter> genericParameterDic = new();
+        private readonly Dictionary<Il2CppTypeDefinition, TypeDefinition> typeDefinitionDic = new Dictionary<Il2CppTypeDefinition, TypeDefinition>();
+        private readonly Dictionary<Il2CppGenericParameter, GenericParameter> genericParameterDic = new Dictionary<Il2CppGenericParameter, GenericParameter>();
         private readonly MethodDefinition attributeAttribute;
         private readonly TypeReference stringType;
         private readonly TypeSystem typeSystem;
-        private readonly Dictionary<int, FieldDefinition> fieldDefinitionDic = new();
-        private readonly Dictionary<int, PropertyDefinition> propertyDefinitionDic = new();
-        private readonly Dictionary<int, MethodDefinition> methodDefinitionDic = new();
+        private readonly Dictionary<int, FieldDefinition> fieldDefinitionDic = new Dictionary<int, FieldDefinition>();
+        private readonly Dictionary<int, PropertyDefinition> propertyDefinitionDic = new Dictionary<int, PropertyDefinition>();
+        private readonly Dictionary<int, MethodDefinition> methodDefinitionDic = new Dictionary<int, MethodDefinition>();
 
         public DummyAssemblyGenerator(Il2CppExecutor il2CppExecutor, bool addToken)
         {
@@ -338,7 +338,7 @@ namespace Il2CppDumper
                         if (propertyDef.set >= 0)
                         {
                             SetMethod = methodDefinitionDic[typeDef.methodStart + propertyDef.set];
-                            propertyType ??= SetMethod.Parameters[0].ParameterType;
+                            propertyType = propertyType ?? SetMethod.Parameters[0].ParameterType;
                         }
                         var propertyDefinition = new PropertyDefinition(propertyName, (PropertyAttributes)propertyDef.attrs, propertyType)
                         {

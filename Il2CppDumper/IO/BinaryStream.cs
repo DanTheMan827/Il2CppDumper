@@ -27,8 +27,8 @@ namespace Il2CppDumper
             writer = new BinaryWriter(stream, Encoding.UTF8, true);
             readClass = GetType().GetMethod("ReadClass", Type.EmptyTypes);
             readClassArray = GetType().GetMethod("ReadClassArray", new[] { typeof(long) });
-            genericMethodCache = new();
-            attributeCache = new();
+            genericMethodCache = new Dictionary<Type, MethodInfo>();
+            attributeCache = new Dictionary<FieldInfo, VersionAttribute[]>();
         }
 
         public bool ReadBoolean() => reader.ReadBoolean();
@@ -93,17 +93,25 @@ namespace Il2CppDumper
 
         private object ReadPrimitive(Type type)
         {
-            return type.Name switch
+            switch (type.Name)
             {
-                "Int32" => ReadInt32(),
-                "UInt32" => ReadUInt32(),
-                "Int16" => ReadInt16(),
-                "UInt16" => ReadUInt16(),
-                "Byte" => ReadByte(),
-                "Int64" => ReadIntPtr(),
-                "UInt64" => ReadUIntPtr(),
-                _ => throw new NotSupportedException()
-            };
+                case "Int32":
+                    return ReadInt32();
+                case "UInt32":
+                    return ReadUInt32();
+                case "Int16":
+                    return ReadInt16();
+                case "UInt16":
+                    return ReadUInt16();
+                case "Byte":
+                    return ReadByte();
+                case "Int64":
+                    return ReadIntPtr();
+                case "UInt64":
+                    return ReadUIntPtr();
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         public T ReadClass<T>(ulong addr) where T : new()

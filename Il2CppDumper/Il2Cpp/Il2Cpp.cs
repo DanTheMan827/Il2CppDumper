@@ -17,14 +17,14 @@ namespace Il2CppDumper
         public ulong[] unresolvedVirtualCallPointers;
         private ulong[] fieldOffsets;
         public Il2CppType[] types;
-        private readonly Dictionary<ulong, Il2CppType> typeDic = new();
+        private readonly Dictionary<ulong, Il2CppType> typeDic = new Dictionary<ulong, Il2CppType>();
         public ulong[] metadataUsages;
         private Il2CppGenericMethodFunctionsDefinitions[] genericMethodTable;
         public ulong[] genericInstPointers;
         public Il2CppGenericInst[] genericInsts;
         public Il2CppMethodSpec[] methodSpecs;
-        public Dictionary<int, List<Il2CppMethodSpec>> methodDefinitionMethodSpecs = new();
-        public Dictionary<Il2CppMethodSpec, ulong> methodSpecGenericMethodPointers = new();
+        public Dictionary<int, List<Il2CppMethodSpec>> methodDefinitionMethodSpecs = new Dictionary<int, List<Il2CppMethodSpec>>();
+        public Dictionary<Il2CppMethodSpec, ulong> methodSpecGenericMethodPointers = new Dictionary<Il2CppMethodSpec, ulong>();
         private bool fieldOffsetsArePointers;
         protected long metadataUsagesCount;
         public Dictionary<string, Il2CppCodeGenModule> codeGenModules;
